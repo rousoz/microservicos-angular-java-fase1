@@ -3,9 +3,6 @@ version: '3.8'
 services:
   frontend:
     build:
-      #context: ../../angular/backmicroservico/fase1
-      #context: ../../../angular/backmicroservico/fase1
-      #context: /home/rousoz/programas/angular/backmicroservico/fase1
       context: ./frontend
       dockerfile: Dockerfile
     ports:
@@ -17,7 +14,6 @@ services:
   catalogo-service:
     build:
       context: .
-      #context: /home/rousoz/programas/java/microservices/fase1
       dockerfile: catalogo-service/Dockerfile
     ports:
       - "8081:8081"
