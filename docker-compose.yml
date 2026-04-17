@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      #context: ../../angular/backmicroservico/fase1
+      #context: ../../../angular/backmicroservico/fase1
+      #context: /home/rousoz/programas/angular/backmicroservico/fase1
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "4200:80"
+    depends_on:
+      - catalogo-service
+      - inventario-service
+
+  catalogo-service:
+    build:
+      context: .
+      #context: /home/rousoz/programas/java/microservices/fase1
+      dockerfile: catalogo-service/Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+
+  inventario-service:
+    build:
+      context: .
+      dockerfile: inventario-service/Dockerfile
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker

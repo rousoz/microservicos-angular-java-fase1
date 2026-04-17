@@ -1,0 +1,60 @@
+<section class="page-shell">
+  <header class="page-header">
+    <div>
+      <h1>Itens de Inventário</h1>
+      <p>CRUD para o microserviço de inventário em http://localhost:8082</p>
+    </div>
+  </header>
+
+  <form class="card form-card" [formGroup]="itemForm" (ngSubmit)="save()">
+    <h2>{{ itemForm.value.id ? 'Editar item' : 'Novo item' }}</h2>
+
+    <label>
+      Produto
+      <select formControlName="productId">
+        <option value="" disabled selected>Selecione um produto</option>
+        <option *ngFor="let product of products" [value]="product.id">{{ product.name }}</option>
+      </select>
+    </label>
+
+    <label>
+      Quantidade
+      <input type="number" formControlName="quantity" />
+    </label>
+
+    <div class="form-actions">
+      <button type="submit" class="primary">Salvar</button>
+      <button type="button" class="secondary" (click)="cancelEdit()">Cancelar</button>
+    </div>
+
+    <div *ngIf="error" class="alert">{{ error }}</div>
+  </form>
+
+  <section class="table-shell">
+    <h2>Lista de itens</h2>
+    <div *ngIf="loading" class="message">Carregando itens de inventário...</div>
+    <div *ngIf="!loading && items.length === 0" class="message">Nenhum item de inventário encontrado.</div>
+
+    <table *ngIf="items.length > 0">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Produto</th>
+          <th>Quantidade</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of items">
+          <td>{{ item.id }}</td>
+          <td>{{ getProductName(item.productId) }}</td>
+          <td>{{ item.quantity }}</td>
+          <td>
+            <button class="link-button" (click)="edit(item)">Editar</button>
+            <button class="link-button danger" (click)="delete(item)">Remover</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+</section>
