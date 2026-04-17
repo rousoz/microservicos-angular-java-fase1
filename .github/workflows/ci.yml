@@ -1,15 +1,35 @@
-# Trecho do build Java
-    steps:
-      - uses: actions/checkout@v4
-      - name: Build with Maven
-        run: mvn clean package -DskipTests # O Maven corre da raiz porque temos o pom pai lá
+name: Java & Angular CI
 
-# Trecho do build Angular
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-java:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+      - name: Build with Maven
+        run: mvn clean package -DskipTests
+
+  build-angular:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
       - name: Install dependencies
-        run: npm ci
-        working-directory: ./frontend  # <--- IMPORTANTE: aponta para a nova pasta
+        run: npm install
+        working-directory: ./frontend
       - name: Build Angular
         run: npm run build
-        working-directory: ./frontend  # <--- IMPORTANTE: aponta para a nova pasta
+        working-directory: ./frontend
+
