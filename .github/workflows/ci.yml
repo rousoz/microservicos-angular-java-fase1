@@ -15,8 +15,10 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
           cache: maven
-      - name: Build with Maven
-        run: mvn clean package -DskipTests
+      #- name: Build with Maven
+      #  run: mvn clean package -DskipTests
+      - name: Test and Build with Maven
+        run: mvn verify  # <-- Mudamos aqui para rodar testes
 
   build-angular:
     runs-on: ubuntu-latest
@@ -28,8 +30,15 @@ jobs:
           node-version: '18'
       - name: Install dependencies
         run: npm install
+      #  working-directory: ./frontend
+      #- name: Build Angular
+      #  run: npm run build
+      #  working-directory: ./frontend
+        working-directory: ./frontend
+      - name: Run Angular Tests  # <-- Novo passo de teste
+        run: npm test -- --watch=false --browsers=ChromeHeadless
         working-directory: ./frontend
       - name: Build Angular
         run: npm run build
-        working-directory: ./frontend
+        working-directory: ./frontend      
 
