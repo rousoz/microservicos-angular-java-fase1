@@ -11,6 +11,28 @@ services:
       - catalogo-service
       - inventario-service
 
+  # Base de Dados do Catálogo
+  db-catalogo:
+    image: postgres:15-alpine
+    container_name: db-catalogo
+    environment:
+      - POSTGRES_DB=db_catalogo
+      - POSTGRES_USER=rousoz
+      - POSTGRES_PASSWORD=senha_catalogo
+    volumes:
+      - pgdata_catalogo:/var/lib/postgresql/data
+
+  # Base de Dados do Inventário
+  db-inventario:
+    image: postgres:15-alpine
+    container_name: db-inventario
+    environment:
+      - POSTGRES_DB=db_inventario
+      - POSTGRES_USER=rousoz
+      - POSTGRES_PASSWORD=senha_inventario
+    volumes:
+      - pgdata_inventario:/var/lib/postgresql/data
+
   catalogo-service:
     build:
       context: .
@@ -18,7 +40,10 @@ services:
     ports:
       - "8081:8081"
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db-catalogo:5432/db_catalogo
+      - SPRING_DATASOURCE_USERNAME=rousoz
+      - SPRING_DATASOURCE_PASSWORD=senha_catalogo
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
 
   inventario-service:
     build:
@@ -26,5 +51,14 @@ services:
       dockerfile: inventario-service/Dockerfile
     ports:
       - "8082:8082"
+    depends_on:
+      - db-inventario
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db-inventario:5432/db_inventario
+      - SPRING_DATASOURCE_USERNAME=rousoz
+      - SPRING_DATASOURCE_PASSWORD=senha_inventario
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update      
+
+  volumes:
+    pgdata_catalogo:
+    pgdata_inventario:      
