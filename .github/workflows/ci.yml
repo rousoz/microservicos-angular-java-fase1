@@ -5,7 +5,7 @@ on:
     branches: [ main ]
 
 jobs:
-  # Job 1: Testes (Garante que o código está bom)
+  # Job 1: Testes ( Garante que o código está bom )
   tests:
     runs-on: ubuntu-latest
     steps:
