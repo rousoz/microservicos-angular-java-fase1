@@ -59,6 +59,6 @@ services:
       - SPRING_DATASOURCE_PASSWORD=senha_inventario
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update      
 
-  volumes:
-     pgdata_catalogo:
-     pgdata_inventario:      
+volumes:
+   pgdata_catalogo:
+   pgdata_inventario:      
