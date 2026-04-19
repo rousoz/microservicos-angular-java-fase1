@@ -47,6 +47,7 @@ services:
       - SPRING_DATASOURCE_USERNAME=rousoz
       - SPRING_DATASOURCE_PASSWORD=senha_catalogo
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=org.hibernate.dialect.PostgreSQLDialect
 
   inventario-service:
     build:
@@ -61,7 +62,8 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db-inventario:5432/db_inventario
       - SPRING_DATASOURCE_USERNAME=rousoz
       - SPRING_DATASOURCE_PASSWORD=senha_inventario
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update      
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=org.hibernate.dialect.PostgreSQLDialect
 
 volumes:
    pgdata_catalogo:
