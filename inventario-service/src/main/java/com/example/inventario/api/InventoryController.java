@@ -43,8 +43,8 @@ public class InventoryController {
     @ResponseStatus(HttpStatus.OK)
     public InventoryDto.InventoryResponse updateInventoryItem(@PathVariable Long id, @RequestBody Map<String, Object> payload) {
     
-        //System.out.println("ID recebido: " + id);
-        //System.out.println("Payload: " + payload);  
+        System.out.println("***************** ID recebido: " + id + " *****************");
+        System.out.println("Payload: " + payload);  
         Long productId = Long.valueOf(payload.get("productId").toString());
         Integer quantity = Integer.valueOf(payload.get("quantity").toString());  
         
