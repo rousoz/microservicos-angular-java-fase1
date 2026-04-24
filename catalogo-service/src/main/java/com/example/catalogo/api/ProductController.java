@@ -3,8 +3,9 @@ package com.example.catalogo.api;
 import com.example.catalogo.application.ProductCatalogService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Page;
 
-import java.util.List;
+//import java.util.List;
 
 @RestController
 @RequestMapping("/api/catalogo")
@@ -30,6 +31,19 @@ public class ProductController {
         return service.updateProduct(id, request);
     }   
 
+    
+    @GetMapping
+    public Page<ProductDto.ProductResponse> listProducts(
+        @RequestParam(value = "page", defaultValue = "1") int page,
+        @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
+    
+        // Converte página 1 (frontend) para página 0 (backend)
+        int effectivePage = Math.max(page - 1, 0);
+        return service.listProducts(effectivePage, pageSize);
+    }
+
+    /*
+    @GetMapping
     @GetMapping
     public List<ProductDto.ProductResponse> listProducts(
             @RequestParam(value = "page", defaultValue = "1") int page,
@@ -39,6 +53,7 @@ public class ProductController {
         int effectivePage = Math.max(page - 1, 0);
         return service.listProducts(effectivePage, pageSizeValue);
     }
+    */
 
     @GetMapping("/{id}")
     public ProductDto.ProductResponse getProduct(@PathVariable("id") Long id) {

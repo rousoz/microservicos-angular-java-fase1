@@ -3,6 +3,10 @@ package com.example.catalogo.application;
 import com.example.catalogo.api.ProductDto;
 import com.example.catalogo.domain.Product;
 import com.example.catalogo.domain.ProductRepository;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -40,10 +44,16 @@ public class ProductCatalogService {
         Product saved = repository.update(product);
         return toResponse(saved);
     }
-    public List<ProductDto.ProductResponse> listProducts() {
-        return listProducts(0, 10);
-    }
+    //public List<ProductDto.ProductResponse> listProducts() {
+    //    return listProducts(0, 10);
+    //}
 
+    public Page<ProductDto.ProductResponse> listProducts(int page, int pageSize) {
+        Pageable pageable = PageRequest.of(page, pageSize);
+        return repository.findAll(pageable).map(this::toResponse); 
+   }
+
+/*
     public List<ProductDto.ProductResponse> listProducts(int page, int pageSize) {
         if (page < 0) {
             throw new IllegalArgumentException("Página deve ser maior ou igual a zero");
@@ -53,7 +63,7 @@ public class ProductCatalogService {
         }
         return repository.findAll(page, pageSize).stream().map(this::toResponse).collect(Collectors.toList());
     }
-
+ */
     public ProductDto.ProductResponse getProduct(Long id) {
         return repository.findById(id).map(this::toResponse).orElseThrow(() -> new IllegalArgumentException("Produto não encontrado: " + id));
     }

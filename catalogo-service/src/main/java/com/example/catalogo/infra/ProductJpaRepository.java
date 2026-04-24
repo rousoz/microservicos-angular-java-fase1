@@ -2,7 +2,10 @@ package com.example.catalogo.infra;
 
 import com.example.catalogo.domain.Product;
 import com.example.catalogo.domain.ProductRepository;
+
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -38,10 +41,16 @@ public class ProductJpaRepository implements ProductRepository {
     }
 
     @Override
+    public Page<Product> findAll(Pageable pageable) {
+        return repository.findAll(pageable);
+    }
+    
+    /*
+    @Override
     public List<Product> findAll(int page, int pageSize) {
         return repository.findAll(PageRequest.of(page, pageSize)).getContent();
     }
-
+     */
     @Override
     public void deleteById(Long id) {
         repository.deleteById(id);

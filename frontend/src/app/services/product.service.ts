@@ -8,6 +8,7 @@ import { PaginatedResponse } from '../models/paginated-response.model';
 @Injectable({
   providedIn: 'root'
 })
+
 export class ProductService {
   private readonly baseUrl = environment.productsApiUrl;
 
@@ -17,10 +18,18 @@ export class ProductService {
     return this.http.get<Product[]>(this.baseUrl);
   }
 
+  getAllPaginated(page: number, pageSize: number): Observable<PaginatedResponse<Product>> {
+    return this.http.get<PaginatedResponse<Product>>(
+      `${this.baseUrl}?page=${page}&pageSize=${pageSize}`
+    ); 
+  }
+
+  /*
   getAllPaginated(page = 1, pageSize = 10): Observable<PaginatedResponse<Product> | Product[]> {
     const url = `${this.baseUrl}?page=${page}&limit=${pageSize}&pageSize=${pageSize}`;
     return this.http.get<PaginatedResponse<Product> | Product[]>(url);
   }
+*/
 
   getById(id: number): Observable<Product> {
     return this.http.get<Product>(`${this.baseUrl}/${id}`);

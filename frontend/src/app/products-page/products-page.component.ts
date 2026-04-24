@@ -41,6 +41,25 @@ export class ProductsPageComponent implements OnInit {
   loadProducts(): void {
     this.loading = true;
     this.productService.getAllPaginated(this.currentPage, this.pageSize).subscribe({
+      next: (response: PaginatedResponse<Product>) => {
+        this.products = response.content;
+        this.totalItems = response.totalElements;
+        this.totalPages = response.totalPages;
+        // Sincroniza a página atual com o que veio do servidor (opcional)
+        this.currentPage = response.number + 1; 
+        this.loading = false;
+      },
+      error: () => {
+        this.error = 'Erro ao carregar produtos.';
+        this.loading = false;
+      }
+    });
+  }
+
+/*
+  loadProducts(): void {
+    this.loading = true;
+    this.productService.getAllPaginated(this.currentPage, this.pageSize).subscribe({
       next: (response: PaginatedResponse<Product> | Product[]) => {
         if (Array.isArray(response)) {
           this.products = response;
@@ -61,7 +80,7 @@ export class ProductsPageComponent implements OnInit {
       }
     });
   }
-
+*/
   edit(product: Product): void {
     this.error = '';
     this.productForm.setValue({
