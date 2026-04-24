@@ -20,10 +20,10 @@ export class ProductsPageComponent implements OnInit {
 
   // Paginação
   currentPage = 1;
-  pageSize = 10;
+  pageSize = 3;
   totalItems = 0;
   totalPages = 0;
-  pageSizeOptions = [10, 25, 50, 100];
+  pageSizeOptions = [3, 5, 10, 15];
 
   constructor(private productService: ProductService, private fb: FormBuilder) {
     this.productForm = this.fb.group({
