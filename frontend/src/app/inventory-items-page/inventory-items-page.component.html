@@ -64,7 +64,22 @@
 
     <!-- Controles de Paginação (que você já tem e estão corretos) -->
     <div *ngIf="!loading && items.length > 0" class="pagination">
-      ...
+      <button [disabled]="currentPage === 1" (click)="onPageChange(currentPage - 1)" class="pagination-btn">
+        ← Anterior
+      </button>
+
+      <div class="page-buttons">
+        <button *ngFor="let page of pageNumbers" (click)="onPageChange(page)" [class.active]="page === currentPage"
+          class="page-btn">
+          {{ page }}
+        </button>
+      </div>
+
+      <button [disabled]="currentPage >= totalPages" (click)="onPageChange(currentPage + 1)" class="pagination-btn">
+        Próximo →
+      </button>
+
+      <span class="page-info">Página {{ currentPage }} de {{ totalPages }}</span>
     </div>
   </section>
 
