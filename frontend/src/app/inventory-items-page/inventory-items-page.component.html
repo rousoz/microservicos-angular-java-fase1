@@ -47,7 +47,8 @@
       <tbody>
         <tr *ngFor="let item of itemsWithNames">
           <td>{{ item.id }}</td>
-          <td>{{ getProductName(item.productId) }}</td>
+          <!--<td>{{ getProductName(item.productId) }}</td>-->
+          <td>{{ item.productId }}</td>
           <td>{{ item.quantity }}</td>
           <td>
             <button class="link-button" (click)="edit(item)">Editar</button>
