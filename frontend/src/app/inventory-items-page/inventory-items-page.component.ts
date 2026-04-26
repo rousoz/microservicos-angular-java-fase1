@@ -20,7 +20,7 @@ export class InventoryItemsPageComponent implements OnInit {
 
   // Variáveis de Paginação
   currentPage = 1;
-  pageSize = 5;
+  pageSize = 3;
   totalPages = 0;
   totalItems = 0;
   pageSizeOptions = [3, 5, 10, 20];
