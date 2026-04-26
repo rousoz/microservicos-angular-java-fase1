@@ -35,26 +35,36 @@
 
   <section class="table-shell">
     <h2>Lista de itens</h2>
-    <!-- ... (mensagens de loading e tabela permanecem iguais) ... -->
+    <div *ngIf="loading" class="message">Carregando itens...</div>
+    <div *ngIf="!loading && items.length === 0" class="message">Nenhum item encontrado.</div>
 
-    <!-- Controles de Paginação -->
+    <!-- A tabela agora usa a lista 'items' que extraímos do 'content' no TS -->
+    <table *ngIf="!loading && items.length > 0">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Produto</th>
+          <th>Quantidade</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of items; trackBy: trackById">
+          <td>{{ item.id }}</td>
+          <!-- Usamos a função para buscar o nome no array de produtos carregado no ngOnInit -->
+          <td>{{ getProductName(item.productId) }}</td>
+          <td>{{ item.quantity }}</td>
+          <td>
+            <button class="link-button" (click)="edit(item)">Editar</button>
+            <button class="link-button danger" (click)="delete(item)">Remover</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Controles de Paginação (que você já tem e estão corretos) -->
     <div *ngIf="!loading && items.length > 0" class="pagination">
-      <button [disabled]="currentPage === 1" (click)="onPageChange(currentPage - 1)" class="pagination-btn">
-        ← Anterior
-      </button>
-
-      <div class="page-buttons">
-        <button *ngFor="let page of pageNumbers" (click)="onPageChange(page)" [class.active]="page === currentPage"
-          class="page-btn">
-          {{ page }}
-        </button>
-      </div>
-
-      <button [disabled]="currentPage >= totalPages" (click)="onPageChange(currentPage + 1)" class="pagination-btn">
-        Próximo →
-      </button>
-
-      <span class="page-info">Página {{ currentPage }} de {{ totalPages }}</span>
+      ...
     </div>
   </section>
 
