@@ -77,6 +77,12 @@
 
     <!-- Controles de Paginação (que você já tem e estão corretos) -->
     <div *ngIf="!loading && items.length > 0" class="pagination">
+      <div class="d-flex justify-content-center gap-2 mt-4">
+        <button class="btn btn-primary">Anterior</button>
+        <button class="btn btn-primary">Próximo</button>
+      </div>
+
+      <!--
       <button [disabled]="currentPage === 1" (click)="onPageChange(currentPage - 1)" class="pagination-btn">
         ← Anterior
       </button>
@@ -91,7 +97,7 @@
       <button [disabled]="currentPage >= totalPages" (click)="onPageChange(currentPage + 1)" class="pagination-btn">
         Próximo →
       </button>
-
+      -->
       <span class="page-info">Página {{ currentPage }} de {{ totalPages }}</span>
     </div>
   </section>
