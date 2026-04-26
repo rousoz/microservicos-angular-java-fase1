@@ -114,23 +114,35 @@ button {
 }
 
 .form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
   margin-bottom: 1.25rem;
 
   label {
+    display: block; // Força o label a ficar em cima
     font-weight: 600;
+    margin-bottom: 0.5rem;
     color: var(--text-main);
   }
 
-  input, select {
-    width: 100%; /* Garante que ocupa a largura total do container */
-    box-sizing: border-box; /* Fundamental para o padding não 'estourar' o tamanho */
+  input, select, textarea {
+    width: 100%;
+    box-sizing: border-box;
     padding: 0.85rem 1rem;
     border-radius: 0.5rem;
     border: 1px solid var(--border-color);
     font-size: 1rem;
+    font-family: inherit;
+    background-color: #fff;
+
+    &:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+    }
+  }
+
+  textarea {
+    min-height: 100px; // Dá um tamanho bom para a descrição
+    resize: vertical;  // Permite ao usuário ajustar apenas a altura
   }
 }
 
@@ -138,4 +150,34 @@ button {
   display: flex;
   gap: 1rem;
   margin-top: 1rem;
+}
+
+.pagination-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  background: #f8fafc;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+
+  label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-weight: 600;
+    margin: 0;
+
+    select {
+      width: auto;
+      padding: 0.4rem 1.5rem 0.4rem 0.75rem;
+      border-radius: 0.4rem;
+    }
+  }
+
+  .total-items {
+    font-size: 0.875rem;
+    color: #64748b;
+    font-weight: 500;
+  }
 }
