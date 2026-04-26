@@ -9,21 +9,25 @@
   <form class="card form-card" [formGroup]="itemForm" (ngSubmit)="save()">
     <h2>{{ itemForm.value.id ? 'Editar item' : 'Novo item' }}</h2>
 
-    <label>
-      Produto
-      <select formControlName="productId">
-        <option [ngValue]="null" disabled>Selecione um produto</option>
-        <!-- Só renderiza opções se products existir e for array -->
-        <ng-container *ngIf="products && products.length > 0">
-          <option *ngFor="let product of products" [value]="product.id">{{ product.name }}</option>
-        </ng-container>
-      </select>
-    </label>
+    <div class="form-group">
+      <label>
+        Produto
+        <select formControlName="productId">
+          <option [ngValue]="null" disabled>Selecione um produto</option>
+          <!-- Só renderiza opções se products existir e for array -->
+          <ng-container *ngIf="products && products.length > 0">
+            <option *ngFor="let product of products" [value]="product.id">{{ product.name }}</option>
+          </ng-container>
+        </select>
+      </label>
+    </div>
 
-    <label>
-      Quantidade
-      <input type="number" formControlName="quantity" />
-    </label>
+    <div class="form-group">
+      <label>
+        Quantidade
+        <input type="number" formControlName="quantity" />
+      </label>
+    </div>
 
     <div class="form-actions">
       <button type="submit" class="primary">Salvar</button>
@@ -79,8 +83,10 @@
     <div *ngIf="!loading && items.length > 0" class="pagination">
       <!--Conceito utility first-->
       <div class="d-flex justify-content-center gap-2 mt-4">
-        <button class="btn btn-primary" [disabled]="currentPage === 1" (click)="onPageChange(currentPage - 1)">Anterior</button>
-        <button class="btn btn-primary" [disabled]="currentPage >= totalPages" (click)="onPageChange(currentPage + 1)">Próximo</button>
+        <button class="btn btn-primary" [disabled]="currentPage === 1"
+          (click)="onPageChange(currentPage - 1)">Anterior</button>
+        <button class="btn btn-primary" [disabled]="currentPage >= totalPages"
+          (click)="onPageChange(currentPage + 1)">Próximo</button>
       </div>
 
       <!-- Conceito tentativa e erro, para renderizar os números de página dinamicamente 
