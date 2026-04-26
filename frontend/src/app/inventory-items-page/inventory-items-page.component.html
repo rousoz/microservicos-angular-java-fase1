@@ -35,6 +35,17 @@
 
   <section class="table-shell">
     <h2>Lista de itens</h2>
+    
+    <!-- Seletor de Itens por Página -->
+    <div class="page-size-selector">
+      <label for="pageSize">Itens por página:</label>
+      <select id="pageSize" [value]="pageSize" (change)="onPageSizeChange($event)">
+        <option *ngFor="let option of pageSizeOptions" [value]="option">
+          {{ option }}
+        </option>
+      </select>
+    </div>
+
     <div *ngIf="loading" class="message">Carregando itens...</div>
     <div *ngIf="!loading && items.length === 0" class="message">Nenhum item encontrado.</div>
 

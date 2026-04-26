@@ -23,6 +23,7 @@ export class InventoryItemsPageComponent implements OnInit {
   pageSize = 5;
   totalPages = 0;
   totalItems = 0;
+  pageSizeOptions = [3, 5, 10, 20];
 
   loading = false;
   error = '';
@@ -82,6 +83,14 @@ export class InventoryItemsPageComponent implements OnInit {
 
   onPageChange(page: number): void {
     this.currentPage = page;
+    this.loadItems();
+  }
+
+  // Adicione o método para mudar o tamanho:
+  onPageSizeChange(event: any): void {
+    const newSize = Number(event.target.value);
+    this.pageSize = newSize;
+    this.currentPage = 1; // Reseta para a primeira página ao mudar o tamanho
     this.loadItems();
   }
 
