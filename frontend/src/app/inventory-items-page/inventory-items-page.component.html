@@ -45,7 +45,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let item of items">
+        <tr *ngFor="let item of itemsWithNames">
           <td>{{ item.id }}</td>
           <td>{{ getProductName(item.productId) }}</td>
           <td>{{ item.quantity }}</td>

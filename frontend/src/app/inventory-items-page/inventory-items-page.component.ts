@@ -46,37 +46,46 @@ export class InventoryItemsPageComponent implements OnInit {
     });
   }
 
-  loadItems(): void {
-    this.loading = true;
-    this.error = '';
+// No topo da classe, defina a interface local ou use 'any[]' explicitamente
+itemsWithNames: any[] = []; 
 
-    this.itemService.getAll().subscribe({
-      next: (response: any) => {
-        // 1. Verificamos exatamente o que o Java enviou
-        console.log('Dados recebidos do inventário:', response);
+loadItems(): void {
+  this.loading = true;
+  this.itemService.getAll().subscribe({
+    next: (response: InventoryItem[]) => { // Tipagem do retorno
+      this.items = response;
+      this.mapItemsWithNames();
+      this.loading = false;
+    },
+    error: () => {
+      this.error = 'Erro ao carregar inventário.';
+      this.loading = false;
+    }
+  });
+}
 
-        // 2. Lógica defensiva para garantir que 'items' receba um Array
-        if (response && Array.isArray(response)) {
-          this.items = response;
-        } else if (response && response.content && Array.isArray(response.content)) {
-          // Caso o backend tenha mudado para paginação sem você perceber
-          this.items = response.content;
-        } else {
-          // Se chegar algo que não é array, inicializamos como vazio para o *ngFor não dar erro NG0900
-          this.items = [];
-          console.error('O backend não enviou um Array! Verifique o console acima.');
-        }
-
-        this.loading = false;
-      },
-      error: (err) => {
-        console.error('Erro na requisição HTTP:', err);
-        this.error = 'Não foi possível carregar o inventário.';
-        this.loading = false;
-        this.items = [];
-      }
-    });
+// Criamos uma função separada para mapear os nomes
+private mapItemsWithNames(): void {
+  if (this.items && this.products.length > 0) {
+    this.itemsWithNames = this.items.map((item: InventoryItem) => ({
+      ...item,
+      productName: this.getProductNameSync(item.productId)
+    }));
+  } else {
+    // Caso os produtos ainda não tenham carregado, usamos os itens puros
+    this.itemsWithNames = this.items.map((item: InventoryItem) => ({
+      ...item,
+      productName: `Carregando... (ID: ${item.productId})`
+    }));
   }
+}
+
+private getProductNameSync(productId: number): string {
+  const product = this.products.find(p => p.id === productId);
+  return product ? product.name : `ID: ${productId}`;
+}
+
+
 
 
   /*
