@@ -40,15 +40,28 @@
 
     <!-- Na Tabela de Itens -->
     <table *ngIf="!loading && items.length > 0">
-      <thead>...</thead>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Produto</th> <!-- Coluna do nome restaurada -->
+          <th>Quantidade</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
       <tbody>
-        <!-- Use o 'items' puro primeiro para testar a estabilidade -->
+        <!-- Usamos o 'trackBy' para garantir performance total -->
         <tr *ngFor="let item of items; trackBy: trackById">
           <td>{{ item.id }}</td>
-          <td>{{ getProductName(item.productId) }}</td> <!-- Use a função ou itemWithNames -->
+          <!-- Chamamos a função getProductName que já está protegida contra nulos -->
+          <td>{{ getProductName(item.productId) }}</td>
           <td>{{ item.quantity }}</td>
+          <td>
+            <button class="link-button" (click)="edit(item)">Editar</button>
+            <button class="link-button danger" (click)="delete(item)">Remover</button>
+          </td>
         </tr>
       </tbody>
     </table>
+
   </section>
 </section>
