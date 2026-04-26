@@ -37,53 +37,63 @@ export class InventoryItemsPageComponent implements OnInit {
     this.loadItems();
   }
 
+  // Adicione isto abaixo do seu ngOnInit ou loadItems
+  trackById(index: number, item: any): number {
+    return item.id;
+  }
+
+  // Melhore o loadProducts para re-mapear os nomes assim que os produtos chegarem
   loadProducts(): void {
     this.productService.getAll().subscribe({
-      next: (products) => (this.products = products),
+      next: (products) => {
+        this.products = products;
+        if (this.items.length > 0) {
+          this.mapItemsWithNames(); // Re-calcula os nomes se os itens já existirem
+        }
+      },
+      error: () => (this.error = 'Erro ao carregar produtos')
+    });
+  }
+
+
+  // No topo da classe, defina a interface local ou use 'any[]' explicitamente
+  itemsWithNames: any[] = [];
+
+  loadItems(): void {
+    this.loading = true;
+    this.itemService.getAll().subscribe({
+      next: (response: InventoryItem[]) => { // Tipagem do retorno
+        this.items = response;
+        this.mapItemsWithNames();
+        this.loading = false;
+      },
       error: () => {
-        this.error = 'Não foi possível carregar produtos para o inventário. Verifique o backend de produtos.';
+        this.error = 'Erro ao carregar inventário.';
+        this.loading = false;
       }
     });
   }
 
-// No topo da classe, defina a interface local ou use 'any[]' explicitamente
-itemsWithNames: any[] = []; 
-
-loadItems(): void {
-  this.loading = true;
-  this.itemService.getAll().subscribe({
-    next: (response: InventoryItem[]) => { // Tipagem do retorno
-      this.items = response;
-      this.mapItemsWithNames();
-      this.loading = false;
-    },
-    error: () => {
-      this.error = 'Erro ao carregar inventário.';
-      this.loading = false;
+  // Criamos uma função separada para mapear os nomes
+  private mapItemsWithNames(): void {
+    if (this.items && this.products.length > 0) {
+      this.itemsWithNames = this.items.map((item: InventoryItem) => ({
+        ...item,
+        productName: this.getProductNameSync(item.productId)
+      }));
+    } else {
+      // Caso os produtos ainda não tenham carregado, usamos os itens puros
+      this.itemsWithNames = this.items.map((item: InventoryItem) => ({
+        ...item,
+        productName: `Carregando... (ID: ${item.productId})`
+      }));
     }
-  });
-}
-
-// Criamos uma função separada para mapear os nomes
-private mapItemsWithNames(): void {
-  if (this.items && this.products.length > 0) {
-    this.itemsWithNames = this.items.map((item: InventoryItem) => ({
-      ...item,
-      productName: this.getProductNameSync(item.productId)
-    }));
-  } else {
-    // Caso os produtos ainda não tenham carregado, usamos os itens puros
-    this.itemsWithNames = this.items.map((item: InventoryItem) => ({
-      ...item,
-      productName: `Carregando... (ID: ${item.productId})`
-    }));
   }
-}
 
-private getProductNameSync(productId: number): string {
-  const product = this.products.find(p => p.id === productId);
-  return product ? product.name : `ID: ${productId}`;
-}
+  private getProductNameSync(productId: number): string {
+    const product = this.products.find(p => p.id === productId);
+    return product ? product.name : `ID: ${productId}`;
+  }
 
 
 
