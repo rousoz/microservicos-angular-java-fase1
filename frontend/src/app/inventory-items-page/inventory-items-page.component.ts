@@ -43,58 +43,39 @@ export class InventoryItemsPageComponent implements OnInit {
     return item.id;
   }
 
-  // Melhore o loadProducts para re-mapear os nomes assim que os produtos chegarem
   loadProducts(): void {
     this.productService.getAll().subscribe({
-      next: (products) => {
-        this.products = products;
-        if (this.items.length > 0) {
-          this.mapItemsWithNames(); // Re-calcula os nomes se os itens já existirem
-        }
+      next: (data: any) => {
+        // Força a garantir que é um array para o <select> não quebrar
+        this.products = Array.isArray(data) ? data : (data.content || []);
       },
       error: () => (this.error = 'Erro ao carregar produtos')
     });
   }
 
-
-  // 1. Garanta que as variáveis começam vazias
-  //items: any[] = [];
-  //itemsWithNames: any[] = [];
-
   loadItems(): void {
     this.loading = true;
-    this.error = '';
-
     this.itemService.getAll().subscribe({
       next: (response: any) => {
-        // 2. LOG CRÍTICO: Veja se o que chega tem [ ] ou { }
-        console.log('RESPOSTA BRUTA:', response);
+        const rawData = Array.isArray(response) ? response : (response.content || []);
 
-        // 3. Extração segura do array (seja ele direto ou dentro de 'content')
-        let rawData: any[] = [];
-        if (Array.isArray(response)) {
-          rawData = response;
-        } else if (response && response.content) {
-          rawData = response.content;
-        }
+        // Criamos uma nova referência de array (importante para o Angular)
+        this.items = [...rawData];
 
-        // 4. Atribuição única (evita loops de renderização)
-        this.items = rawData;
-        this.itemsWithNames = rawData.map(item => ({
+        // Mapeamos os nomes apenas se houver produtos
+        this.itemsWithNames = this.items.map(item => ({
           ...item,
           productName: this.products.find(p => p.id === item.productId)?.name || `ID: ${item.productId}`
         }));
 
         this.loading = false;
       },
-      error: (err) => {
-        console.error(err);
+      error: () => {
         this.loading = false;
-        this.itemsWithNames = [];
+        this.items = [];
       }
     });
   }
-
 
   // Criamos uma função separada para mapear os nomes
   private mapItemsWithNames(): void {
@@ -116,9 +97,6 @@ export class InventoryItemsPageComponent implements OnInit {
     const product = this.products.find(p => p.id === productId);
     return product ? product.name : `ID: ${productId}`;
   }
-
-
-
 
   /*
     loadItems(): void {

@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { Product } from '../models/product.model';
 import { PaginatedResponse } from '../models/paginated-response.model';
@@ -12,16 +12,25 @@ import { PaginatedResponse } from '../models/paginated-response.model';
 export class ProductService {
   private readonly baseUrl = environment.productsApiUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
+  // No product.service.ts
   getAll(): Observable<Product[]> {
-    return this.http.get<Product[]>(this.baseUrl);
+    return this.http.get<any>(this.baseUrl).pipe(
+      map(res => Array.isArray(res) ? res : res.content || [])
+    );
   }
+
+  /*
+    getAll(): Observable<Product[]> {
+      return this.http.get<Product[]>(this.baseUrl);
+    }
+  */
 
   getAllPaginated(page: number, pageSize: number): Observable<PaginatedResponse<Product>> {
     return this.http.get<PaginatedResponse<Product>>(
       `${this.baseUrl}?page=${page}&pageSize=${pageSize}`
-    ); 
+    );
   }
 
   /*
