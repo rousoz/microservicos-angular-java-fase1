@@ -38,10 +38,12 @@ public class InventoryController {
         return service.listItems(pageable);
     }
 
+    /*
     @GetMapping
     public List<InventoryDto.InventoryResponse> listInventory() {
         return service.listItems();
-    }
+    } 
+    */
 
     @GetMapping("/produto/{productId}")
     public List<InventoryDto.InventoryResponse> findByProduct(@PathVariable("productId") Long productId) {
