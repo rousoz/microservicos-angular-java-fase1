@@ -54,6 +54,7 @@ button {
   padding: 0.85rem 1.25rem;
   cursor: pointer;
   font-weight: 700;
+  transition: all 0.2s;
 }
 
 button.primary {
@@ -99,6 +100,55 @@ td {
   text-align: left;
   border-bottom: 1px solid #e2e8f0;
 }
+
+// --- Novas Estilizações para Paginação ---
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding: 1rem;
+  flex-wrap: wrap;
+
+  .page-buttons {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .pagination-btn, .page-btn {
+    padding: 0.6rem 1rem;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    font-size: 0.9rem;
+    color: #475569;
+    
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    &:hover:not(:disabled) {
+      background: #f8fafc;
+      border-color: #cbd5e1;
+    }
+
+    &.active {
+      background: #2563eb;
+      color: white;
+      border-color: #2563eb;
+    }
+  }
+
+  .page-info {
+    font-size: 0.9rem;
+    color: #64748b;
+    font-weight: 500;
+  }
+}
+
+// ------------------------------------------
 
 .alert {
   margin-top: 1rem;
