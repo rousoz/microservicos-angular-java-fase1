@@ -47,7 +47,7 @@
       <tbody>
         <tr *ngFor="let item of itemsWithNames; trackBy: trackById">
           <td>{{ item.id }}</td>
-          <td>{{ item.productName || item.productId }}</td>
+          <!--<td>{{ item.productName || item.productId }}</td>-->
           <td>{{ item.quantity }}</td>
           <td>
             <button class="link-button" (click)="edit(item)">Editar</button>
