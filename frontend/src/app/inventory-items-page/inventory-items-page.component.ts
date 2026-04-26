@@ -14,11 +14,19 @@ import { ProductService } from '../services/product.service';
   styleUrls: ['./inventory-items-page.component.scss']
 })
 export class InventoryItemsPageComponent implements OnInit {
-  items: any[] = [];
+  items: InventoryItem[] = [];
   itemsWithNames: any[] = [];
   products: Product[] = [];
-  error = '';
+
+  // Variáveis de Paginação
+  currentPage = 1;
+  pageSize = 5;
+  totalPages = 0;
+  totalItems = 0;
+
   loading = false;
+  error = '';
+
   itemForm!: FormGroup;
 
   constructor(
@@ -55,64 +63,40 @@ export class InventoryItemsPageComponent implements OnInit {
 
   loadItems(): void {
     this.loading = true;
-    this.itemService.getAll().subscribe({
-      next: (response: any) => {
-        const rawData = Array.isArray(response) ? response : (response.content || []);
+    this.itemService.getAllPaginated(this.currentPage, this.pageSize).subscribe({
+      next: (response) => {
+        // O Spring manda a lista em 'content'
+        this.items = response.content;
+        this.totalPages = response.totalPages;
+        this.totalItems = response.totalElements;
 
-        // Criamos uma nova referência de array (importante para o Angular)
-        this.items = [...rawData];
-
-        // Mapeamos os nomes apenas se houver produtos
-        this.itemsWithNames = this.items.map(item => ({
-          ...item,
-          productName: this.products.find(p => p.id === item.productId)?.name || `ID: ${item.productId}`
-        }));
-
+        this.mapItemsWithNames();
         this.loading = false;
       },
       error: () => {
+        this.error = 'Erro ao carregar inventário.';
         this.loading = false;
-        this.items = [];
       }
     });
   }
 
-  // Criamos uma função separada para mapear os nomes
+  onPageChange(page: number): void {
+    this.currentPage = page;
+    this.loadItems();
+  }
+
+  // Reaproveitamos a lógica de mapeamento que estabilizou o erro NG0900
   private mapItemsWithNames(): void {
-    if (this.items && this.products.length > 0) {
-      this.itemsWithNames = this.items.map((item: InventoryItem) => ({
-        ...item,
-        productName: this.getProductNameSync(item.productId)
-      }));
-    } else {
-      // Caso os produtos ainda não tenham carregado, usamos os itens puros
-      this.itemsWithNames = this.items.map((item: InventoryItem) => ({
-        ...item,
-        productName: `Carregando... (ID: ${item.productId})`
-      }));
-    }
+    this.itemsWithNames = this.items.map(item => ({
+      ...item,
+      productName: this.products.find(p => p.id === item.productId)?.name || `ID: ${item.productId}`
+    }));
   }
 
-  private getProductNameSync(productId: number): string {
-    const product = this.products.find(p => p.id === productId);
-    return product ? product.name : `ID: ${productId}`;
+  // Para gerar os números das páginas no HTML
+  get pageNumbers(): number[] {
+    return Array.from({ length: this.totalPages }, (_, i) => i + 1);
   }
-
-  /*
-    loadItems(): void {
-      this.loading = true;
-      this.itemService.getAll().subscribe({
-        next: (items) => {
-          this.items = items;
-          this.loading = false;
-        },
-        error: () => {
-          this.error = 'Não foi possível carregar os itens de inventário. Verifique o backend em http://localhost:8082';
-          this.loading = false;
-        }
-      });
-    }
-  */
 
   edit(item: InventoryItem): void {
     this.error = '';

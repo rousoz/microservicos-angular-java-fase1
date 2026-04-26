@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { InventoryItem } from '../models/inventory-item.model';
+import { PaginatedResponse } from '../models/paginated-response.model';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +11,14 @@ import { InventoryItem } from '../models/inventory-item.model';
 export class InventoryItemService {
   private readonly baseUrl = environment.inventoryItemsApiUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
+
+  // inventory-item.service.ts
+  getAllPaginated(page: number, pageSize: number): Observable<PaginatedResponse<InventoryItem>> {
+    return this.http.get<PaginatedResponse<InventoryItem>>(
+      `${this.baseUrl}?page=${page}&pageSize=${pageSize}`
+    );
+  }
 
   getAll(): Observable<InventoryItem[]> {
     return this.http.get<InventoryItem[]>(this.baseUrl);

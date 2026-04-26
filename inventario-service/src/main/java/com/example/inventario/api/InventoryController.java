@@ -1,6 +1,10 @@
 package com.example.inventario.api;
 
 import com.example.inventario.application.InventoryApplicationService;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +29,16 @@ public class InventoryController {
     }
 
     @GetMapping
+    public Page<InventoryDto.InventoryResponse> listInventory(
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
+
+        // Lembre-se: Frontend começa em 1, Spring Data começa em 0
+        Pageable pageable = PageRequest.of(Math.max(page - 1, 0), pageSize);
+        return service.listItems(pageable);
+    }
+
+    @GetMapping
     public List<InventoryDto.InventoryResponse> listInventory() {
         return service.listItems();
     }
@@ -41,31 +55,14 @@ public class InventoryController {
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public InventoryDto.InventoryResponse updateInventoryItem(@PathVariable("id") Long id, @RequestBody Map<String, Object> payload) {
-    
-        //System.out.println("***************** ID recebido: " + id + " *****************");
-        //System.out.println("Payload: " + payload);  
+    public InventoryDto.InventoryResponse updateInventoryItem(@PathVariable("id") Long id,
+            @RequestBody Map<String, Object> payload) {
         Long productId = Long.valueOf(payload.get("productId").toString());
-        Integer quantity = Integer.valueOf(payload.get("quantity").toString());  
-        
-        //InventoryDto.InventoryRequest updateRequest = new InventoryDto.InventoryRequest((Long) payload.get("productId"), (Integer) payload.get("quantity"));
+        Integer quantity = Integer.valueOf(payload.get("quantity").toString());
         InventoryDto.InventoryRequest updateRequest = new InventoryDto.InventoryRequest(productId, quantity);
         return service.updateItem(updateRequest);
     }
 
-/*
-    @PutMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public InventoryDto.InventoryResponse updateInventoryItem(@PathVariable("id") Long id, @RequestBody InventoryDto.InventoryRequest request) {
-        if (request.productId() == null) {
-            throw new IllegalArgumentException("ID do produto é obrigatório para atualização");
-        }       
-        
-        InventoryDto.InventoryRequest updateRequest = new InventoryDto.InventoryRequest(request.productId(), request.quantity());
-        return service.updateItem(updateRequest);
-    }
-
-*/
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteInventoryItem(@PathVariable("id") Long id) {
