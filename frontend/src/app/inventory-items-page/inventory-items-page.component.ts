@@ -48,17 +48,52 @@ export class InventoryItemsPageComponent implements OnInit {
 
   loadItems(): void {
     this.loading = true;
+    this.error = '';
+
     this.itemService.getAll().subscribe({
-      next: (items) => {
-        this.items = items;
+      next: (response: any) => {
+        // 1. Verificamos exatamente o que o Java enviou
+        console.log('Dados recebidos do inventário:', response);
+
+        // 2. Lógica defensiva para garantir que 'items' receba um Array
+        if (response && Array.isArray(response)) {
+          this.items = response;
+        } else if (response && response.content && Array.isArray(response.content)) {
+          // Caso o backend tenha mudado para paginação sem você perceber
+          this.items = response.content;
+        } else {
+          // Se chegar algo que não é array, inicializamos como vazio para o *ngFor não dar erro NG0900
+          this.items = [];
+          console.error('O backend não enviou um Array! Verifique o console acima.');
+        }
+
         this.loading = false;
       },
-      error: () => {
-        this.error = 'Não foi possível carregar os itens de inventário. Verifique o backend em http://localhost:8082';
+      error: (err) => {
+        console.error('Erro na requisição HTTP:', err);
+        this.error = 'Não foi possível carregar o inventário.';
         this.loading = false;
+        this.items = [];
       }
     });
   }
+
+
+  /*
+    loadItems(): void {
+      this.loading = true;
+      this.itemService.getAll().subscribe({
+        next: (items) => {
+          this.items = items;
+          this.loading = false;
+        },
+        error: () => {
+          this.error = 'Não foi possível carregar os itens de inventário. Verifique o backend em http://localhost:8082';
+          this.loading = false;
+        }
+      });
+    }
+  */
 
   edit(item: InventoryItem): void {
     this.error = '';
@@ -85,7 +120,7 @@ export class InventoryItemsPageComponent implements OnInit {
       productId: Number(this.itemForm.value.productId),
       quantity: Number(this.itemForm.value.quantity)
     };
-  
+
     const action = item.id ? this.itemService.update(item) : this.itemService.create(item);
     //const action = item.id ? this.itemService.update(payload) : this.itemService.create(item);
     action.subscribe({

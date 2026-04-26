@@ -35,7 +35,8 @@
     <div *ngIf="loading" class="message">Carregando itens de inventário...</div>
     <div *ngIf="!loading && items.length === 0" class="message">Nenhum item de inventário encontrado.</div>
 
-    <table *ngIf="items.length > 0">
+    <!--<table *ngIf="items.length > 0">-->
+    <table *ngIf="!loading && items && items.length > 0"></table>
       <thead>
         <tr>
           <th>ID</th>
