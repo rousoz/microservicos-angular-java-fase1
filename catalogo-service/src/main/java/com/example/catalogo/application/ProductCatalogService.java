@@ -44,9 +44,6 @@ public class ProductCatalogService {
         Product saved = repository.update(product);
         return toResponse(saved);
     }
-    //public List<ProductDto.ProductResponse> listProducts() {
-    //    return listProducts(0, 10);
-    //}
 
     public Page<ProductDto.ProductResponse> listProducts(int page, int pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
