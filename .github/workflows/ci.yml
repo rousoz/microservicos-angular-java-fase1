@@ -1,4 +1,4 @@
-name: CI/CD Pipeline Otimizado
+name: CI/CD Pipeline Ultra Otimizado
 
 on:
   push:
@@ -6,65 +6,116 @@ on:
     paths-ignore:
       - '**.md'
       - '.gitignore'
+      - 'docs/**'
+      - '.vscode/**'
+
+# Necessário para corrigir o erro de cache (type=gha) do Buildx
+permissions:
+  contents: read
+  actions: write
 
 jobs:
-  # Job de Testes Java (Independente)
+  # Job de Testes Java
   test-java:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      
+      - name: Check for Java changes
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            backend:
+              - 'catalogo-service/**'
+              - 'inventario-service/**'
+              - 'pom.xml'
+      
+      - name: Set up JDK 21
+        if: steps.filter.outputs.backend == 'true'
+        uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: 'temurin'
           cache: maven
-      - run: mvn test
 
-  # Job de Testes Angular (Roda ao mesmo tempo que o Java)
+      - name: Run Java Tests
+        if: steps.filter.outputs.backend == 'true'
+        run: mvn test
+
+  # Job de Testes Angular
   test-angular:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      
+      - name: Check for Frontend changes
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            frontend:
+              - 'frontend/**'
+
+      - name: Setup Node
+        if: steps.filter.outputs.frontend == 'true'
+        uses: actions/setup-node@v4
         with:
           node-version: '18'
           cache: 'npm'
           cache-dependency-path: './frontend/package-lock.json'
-      - run: npm ci # 'npm ci' é mais rápido e limpo para CI que 'npm install'
+      
+      - name: Install and Test
+        if: steps.filter.outputs.frontend == 'true'
         working-directory: ./frontend
-      - run: npm test -- --watch=false --browsers=ChromeHeadless
-        working-directory: ./frontend
+        run: |
+          npm ci
+          npm test -- --watch=false --browsers=ChromeHeadless
 
-  # Build e Push (Roda assim que OS DOIS testes passarem)
+  # Build e Push em Paralelo
   build-and-push:
     needs: [test-java, test-angular]
+    if: always() && !contains(needs.*.result, 'failure')
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        # Nomes exatos dos serviços para as tags
         service: [frontend, catalogo-service, inventario-service]
+    
     steps:
       - uses: actions/checkout@v4
+      
+      - name: Check changes for ${{ matrix.service }}
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            change:
+              - '${{ matrix.service }}/**'
+              - '${{ matrix.service == 'frontend' && 'frontend/package.json' || 'pom.xml' }}'
 
-      # Necessário para usar o cache avançado (type=gha)
+      # Setup Buildx com o driver correto para evitar o erro de cache
       - name: Set up Docker Buildx
+        if: steps.filter.outputs.change == 'true'
         uses: docker/setup-buildx-action@v3
+        with:
+          driver: docker-container
 
       - name: Login to Docker Hub
+        if: steps.filter.outputs.change == 'true'
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and push
+        if: steps.filter.outputs.change == 'true'
         uses: docker/build-push-action@v5
         with:
-          # Se for frontend, o contexto é ./frontend. Se não, é a raiz .
           context: ${{ matrix.service == 'frontend' && './frontend' || '.' }}
-          # Localização exata do Dockerfile baseada no seu docker-compose
           file: ${{ matrix.service == 'frontend' && './frontend/Dockerfile' || format('./{0}/Dockerfile', matrix.service) }}
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service }}:latest
+          # Cache inteligente do GitHub Actions
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
