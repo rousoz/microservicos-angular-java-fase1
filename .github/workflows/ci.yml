@@ -41,21 +41,30 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
+        # Nomes exatos dos serviços para as tags
         service: [frontend, catalogo-service, inventario-service]
     steps:
       - uses: actions/checkout@v4
-      - uses: docker/login-action@v3
+
+      # Necessário para usar o cache avançado (type=gha)
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and push ${{ matrix.service }}
+      - name: Build and push
         uses: docker/build-push-action@v5
         with:
+          # Se for frontend, o contexto é ./frontend. Se não, é a raiz .
           context: ${{ matrix.service == 'frontend' && './frontend' || '.' }}
-          file: ${{ matrix.service != 'frontend' && format('./{0}/Dockerfile', matrix.service) || '' }}
+          # Localização exata do Dockerfile baseada no seu docker-compose
+          file: ${{ matrix.service == 'frontend' && './frontend/Dockerfile' || format('./{0}/Dockerfile', matrix.service) }}
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service }}:latest
-          # A MÁGICA AQUI: Cache de camadas Docker
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
