@@ -120,12 +120,3 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Notificar Discord
-        if: always() # Notifica mesmo se falhar ou passar
-        uses: sarisia/actions-status-discord@v1
-        with:
-          webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          status: ${{ job.status }}
-          content: "O build do serviço ${{ matrix.service }} terminou!"
-          title: "Resultado do CI/CD"
-
