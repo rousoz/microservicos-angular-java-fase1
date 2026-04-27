@@ -1,18 +1,17 @@
 # Use Node.js to build the Angular app
 FROM node:18-alpine AS build
-
 WORKDIR /app
 
-# Copy package files
+# 1. Copia apenas os arquivos de pacotes
 COPY package*.json ./
 
-# Install dependencies
+# 2. Instala as dependências (fica em cache se o package.json não mudar)
 RUN npm ci
 
-# Copy source code
+# 3. SÓ AGORA copia o resto do código
 COPY . .
 
-# Build the app
+# 4. Build
 RUN npm run build
 
 # Use nginx to serve the built app
