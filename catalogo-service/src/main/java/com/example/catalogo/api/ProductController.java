@@ -31,7 +31,6 @@ public class ProductController {
         return service.updateProduct(id, request);
     }   
 
-    
     @GetMapping
     public Page<ProductDto.ProductResponse> listProducts(
         @RequestParam(value = "page", defaultValue = "1") int page,
@@ -41,19 +40,6 @@ public class ProductController {
         int effectivePage = Math.max(page - 1, 0);
         return service.listProducts(effectivePage, pageSize);
     }
-
-    /*
-    @GetMapping
-    @GetMapping
-    public List<ProductDto.ProductResponse> listProducts(
-            @RequestParam(value = "page", defaultValue = "1") int page,
-            @RequestParam(value = "limit", required = false) Integer limit,
-            @RequestParam(value = "pageSize", required = false) Integer pageSize) {
-        int pageSizeValue = limit != null ? limit : (pageSize != null ? pageSize : 10);
-        int effectivePage = Math.max(page - 1, 0);
-        return service.listProducts(effectivePage, pageSizeValue);
-    }
-    */
 
     @GetMapping("/{id}")
     public ProductDto.ProductResponse getProduct(@PathVariable("id") Long id) {
