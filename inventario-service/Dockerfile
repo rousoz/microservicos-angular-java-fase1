@@ -2,33 +2,24 @@
 FROM maven:3.9.6-eclipse-temurin-21 AS build
 WORKDIR /app
 
-# 1. Copia apenas os arquivos de configuração primeiro
+# 1. Copia o POM pai E o POM do módulo para resolver dependências
 COPY pom.xml .
 COPY inventario-service/pom.xml ./inventario-service/
 
-# 2. Baixa as dependências (Camada de cache pesada)
-# Se o pom.xml não mudar, o Docker reutiliza esta camada
+# 2. Instala o POM pai e baixa dependências do módulo (Cache pesado)
+RUN mvn install -N -DskipTests
 RUN mvn dependency:go-offline -B -pl inventario-service -am
 
-# 3. Só agora copia o código fonte
+# 3. Copia o código fonte do módulo
 COPY inventario-service/src ./inventario-service/src/
 
-# 4. Build (já com as dependências em cache)
+# 4. Build final
 WORKDIR /app/inventario-service
 RUN mvn clean package spring-boot:repackage -DskipTests
 
-# Build the service
-
-# Use JRE to run
+# Runtime
 FROM eclipse-temurin:21-jre-jammy
-
 WORKDIR /app
-
-# Copy the JAR
 COPY --from=build /app/inventario-service/target/*.jar app.jar
-
-ENTRYPOINT ["java", "-jar", "app.jar"]
-
 EXPOSE 8082
-
-CMD ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
