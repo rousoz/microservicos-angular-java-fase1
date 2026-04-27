@@ -13,6 +13,7 @@ import { ProductService } from '../services/product.service';
   templateUrl: './inventory-items-page.component.html',
   styleUrls: ['./inventory-items-page.component.scss']
 })
+
 export class InventoryItemsPageComponent implements OnInit {
   items: InventoryItem[] = [];
   itemsWithNames: any[] = [];
